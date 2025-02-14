@@ -2,72 +2,79 @@ import requests
 import time
 import json
 
+user = "Teste"
+#"Passwords must have at least one non alphanumeric character, one digit ('0'-'9'), one uppercase ('A'-'Z'), one lowercase ('a'-'z'), one special character and Password must be eight characters or longer."}
+password = "Teste*1234"
+
 #criar usuario
-urlUser = "https://demoqa.com/Account/v1/User"
-dataUser = {
-  "userName": "Pedro",
-  "password": "senha123"
-}
-respostaUser = requests.post(urlUser, json=dataUser)
-print (respostaUser.json)
-fileUser = json.loads(respostaUser)
-#coletando userID que é necessário para alugar o livro
-UserID = (fileUser["userId"])
 
-time.sleep(2)
+dataUser = {"userName": user,"password": password}
+postUser = requests.post("https://demoqa.com/Account/v1/User", data=dataUser)
+mensagemRetorno = postUser.text
+mensagemRetornoFormatada = mensagemRetorno[11:47]
+userId = mensagemRetornoFormatada
+print (mensagemRetornoFormatada)
 
-#gerar token
-urlToken ="https://demoqa.com/Account/v1/GenerateToken"
-dataToken = {
-  "userName": "Pedro",
-  "password": "senha123"
-}
-respostaToken = requests.post(urlToken, json=dataToken)
-print(respostaToken.json)
+time.sleep(20)
+#coletar user ID
 
-time.sleep(2)
 
-#Checar criação do usuário
+#Gerar Token
+dataToken = {"userName": user,"password": password}
+postToken = requests.post("https://demoqa.com/Account/v1/GenerateToken", data=dataToken)
+print (postToken.text)
+mensagemRetorno = postToken.text
+if mensagemRetorno.find('"status":"Success","result":"User authorized successfully."') == -1:
+    print("Erro, verificar")
+else:
+    print("Token gerado com sucesso!")
 
-urlAuthorized = "https://demoqa.com/Account/v1/Authorized"
-dataAuthorized = {
-    "userName": "Pedro",
-    "password": "senha123"
-}
-repostaAuthorized = requests.post(urlAuthorized, json=dataAuthorized)
-print(repostaAuthorized.json)
+time.sleep(5)
 
-time.sleep(2)
+#Confirmar usuario
+dataUserConfirmation = {"userName": user,"password": password}
+postUserConfirmation = requests.post("https://demoqa.com/Account/v1/Authorized", data=dataUserConfirmation)
+time.sleep(1)
+mensagemRetorno = postUserConfirmation.text
+if "true" in mensagemRetorno:
+    print ("Usuário validado!")
+else:
+    print ("Erro, verificar")
+
+#time.sleep(5)
 
 #listar livros disponiveis
+dataGetBooks = requests.get("https://demoqa.com/BookStore/v1/Books")
+print(dataGetBooks.text)
+mensagemRetorno = dataGetBooks.text
+if mensagemRetorno.find('"isbn"') == -1:
+    print("Erro, verificar")
+else:
+    print("Lista gerada com sucesso!")
 
-urlBookList = "https://demoqa.com/BookStore/v1/Books"
-BookList = requests.get(urlBookList)
-respostaBookList = BookList.json()
-print(respostaBookList.json)
+time.sleep(5)
 
-#alugar 2 livros
-urlUserBooking =  "https://demoqa.com/BookStore/v1/Books"
-dataUserBooking1 = {
-  "userId": UserID,
-  "isbn": "string"
-}
-dataUserBooking2 ={
-  "userId": UserID,
-  "isbn": "string"
-}
-respostaUserBooking1 = requests.post(urlUserBooking, json=dataUserBooking1)
-respostaUserBooking2 = requests.post(urlUserBooking, json=dataUserBooking2)
-print (respostaUserBooking1.json)
-print (respostaUserBooking2.json)
+isbn1 = "9781449331818"
+isbn2 = "9781449325862"
 
-#mostrar informações do usuário
-urlGetAllUserDetails = "https://demoqa.com/Account/v1/User/{UUID}"
-getAllUserDetails = requests.get(urlGetAllUserDetails)
-respostaAllUserDetails = getAllUserDetails.json()
-print(respostaAllUserDetails.json)
+#alugar 2 livros de livre escolha 
 
-#deletar user para poder rodar mais de uma vez 
-DeleteUser = requests.delete(urlUser, data ={'UserId':UserID}) 
-print(DeleteUser.json)
+#***Usuario não está autorizando reservar livro nem pelo site (code 1200), nem por aqui. Talvez seja alguma instabilidade
+dataBooking = {"userId":'"'+userId+'"',"isbn":isbn1}
+dataBooking2 = {"userId":'"'+userId+'"',"isbn":isbn2}
+booking = requests.put("https://demoqa.com/BookStore/v1/Books/"+isbn1, dataBooking)
+booking2 = requests.put("https://demoqa.com/BookStore/v1/Books/"+isbn2, dataBooking2)
+print (booking.text)
+time.sleep(5)
+
+
+#mostrar usuario com os livros
+userDetails = requests.get("https://demoqa.com/Account/v1/User/"+userId)
+print (userDetails.text)
+
+#deletar usuario
+deleterUser = requests.delete("https://demoqa.com/Account/v1/User/"+userId)
+print (deleterUser.text)
+
+
 
