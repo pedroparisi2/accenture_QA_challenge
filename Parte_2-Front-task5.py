@@ -15,7 +15,7 @@ browser = webdriver.Chrome()
 browser.get("https://demoqa.com/")
 browser.maximize_window()
 
-#Escolher a opção Alerts, Frame & Windows na página inicial
+#Escolher a opção Interactions na página inicial
 lista_btn = browser.find_elements("class name", "category-cards")
 
 for btn_interactions in lista_btn:
@@ -27,6 +27,8 @@ browser.execute_script("window.open('https://demoqa.com/sortable', '_blank')")
 browser.switch_to.window(browser.window_handles[1])
 browser.maximize_window()
 #browser.execute_script("document.body.style.zoom='60%'")
+
+#colocar em ordem crescente, se já estiver em ordem ele checa e pula.
 
 time.sleep(5)
 i = 0
@@ -54,7 +56,6 @@ while i < 4:
                 j = 1
                 break
     i=i+1
-    j = 1
     while tableListItemProperty != 'Two':
         xpath = '//*[@id="demo-tabpane-list"]/div/div['+str(j)+']'
         tableListItem = browser.find_element("xpath",xpath)

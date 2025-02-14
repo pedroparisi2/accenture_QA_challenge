@@ -102,8 +102,6 @@ while y < i:
     k=k+1
     y=y+1
 
-time.sleep(10)
-
 
 
 
