@@ -109,7 +109,6 @@ for msgsucesso in validacao_msg_sucesso:
         print("Erro! Favor revisar")
         break
 
-time.sleep(10)
 
 
 

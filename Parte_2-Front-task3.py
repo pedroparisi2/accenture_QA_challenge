@@ -24,26 +24,30 @@ for btn_elements in lista_btn:
 browser.execute_script("document.body.style.zoom='60%'")
 time.sleep(1)
 
-#Mesmo selecionando todos os itens da lista, tentar identificar por nome ou ID o selenium não clica no submenu
 menulist = browser.find_elements("class name", "header-text")
 for menubtn in menulist:
     if "Elements" in menubtn.text:
         menubtn.click()
         break
 
+#Mesmo selecionando todos os itens da lista, tentar identificar por nome ou ID o selenium não clica no submenu
+#submenulist = browser.find_elements("class name","menu-list")
+#for submenubtn in submenulist:
+#    if "Web Tables" in submenubtn.text:
+#        submenubtn.click()
+#       time.sleep(1)
+#        break
+
+
+#**Workaround
+browser.execute_script("window.open('https://demoqa.com/webtables', '_blank')")
+browser.switch_to.window(browser.window_handles[1])
+browser.maximize_window()
 browser.execute_script("document.body.style.zoom='60%'")
 
+time.sleep(1)
 
-submenulist = browser.find_elements("class name","menu-list")
-for submenubtn in submenulist:
-    if "Web Tables" in submenubtn.text:
-        submenubtn.click()
-        time.sleep(1)
-        break
-
-time.sleep(10)
-
-#Adicionando 12 usuarios de maneira dinamica já automatizados, podemos usar uma base de dados aqui para pegarmos os valores. 
+#Adicionando 12 usuarios de maneira dinamicas, podemos usar uma base de dados aqui para pegarmos os valores. 
 #Optei por criar randomicamente atraves de Id's unicos
 
 add_button = browser.find_element("id","addNewRecordButton")
@@ -82,13 +86,15 @@ while i <= 11:
 
 #deletar os usuarios criados
 y=0
+
+#criando uma constante que começa com 4(k=4), por default já temos 3 usuarios na tabela, sendo assim o proximo usuario criado sempre começará
+#com ID final 4 (delete-record-4), e os proximos sempre serão k+1, independetemente se algum registro for excluido.
 k=4
 while y < i:  
     pesquisaEmail = browser.find_element("id","searchBox")
     pesquisaEmail.send_keys(emaillist[y])
     botaoPesquisar = browser.find_element("css selector","#basic-addon2")
     botaoPesquisar.click()
-    aspas = str('"')
     botaoDeletar = browser.find_element("css selector",'#delete-record-'+str(k))
     botaoDeletar.click()
     pesquisaEmail.clear()
