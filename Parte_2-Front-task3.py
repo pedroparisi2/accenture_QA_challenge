@@ -13,7 +13,7 @@ browser = webdriver.Chrome()
 browser.get("https://demoqa.com/")
 browser.maximize_window()
 
-#Escolher a opção Alerts, Frame & Windows na página inicial
+#Escolher a opção Elements na página inicial
 lista_btn = browser.find_elements("class name", "category-cards")
 
 for btn_elements in lista_btn:
